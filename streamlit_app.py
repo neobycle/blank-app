@@ -31,6 +31,9 @@ if uploaded_file is not None:
     # 날짜별 및 사용자별로 카운팅
     df_count = df_filtered.groupby(['User']).size().reset_index(name='인증 횟수')
 
+    # 테이블 순서를 1부터 시작하도록 인덱스 재설정
+    df_mission_combined.index = df_mission_combined.index + 1
+
     # 결과 표시 (사용자별 인증 횟수)
     st.write(f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수:')
     st.write(df_count)
