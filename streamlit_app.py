@@ -79,8 +79,12 @@ if uploaded_file is not None:
     # 사용자별 인증 횟수 합산
     df_auth_count = df_filtered.groupby('User')['인증 횟수'].sum().reset_index()
 
-    # 사용자별 미션 현황과 인증 횟수 병합
+    # 사용자별 미션 현황과 인증 횟수 병합 (미션 열 뒤에 인증 횟수 열이 오도록)
     df_mission_combined = pd.merge(df_mission_combined, df_auth_count, on='User', how='left')
+
+    # 인증 횟수 열을 미션 뒤로 이동
+    cols = ['User', '미션', 'Message', '인증 횟수']
+    df_mission_combined = df_mission_combined[cols]
 
     # 테이블 순서를 1부터 시작하도록 인덱스 재설정
     df_mission_combined.index = df_mission_combined.index + 1
