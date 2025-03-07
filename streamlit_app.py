@@ -88,5 +88,6 @@ df_mission_combined.index = df_mission_combined.index + 1
 # 사용자별 미션 현황 및 메시지 표시
 st.write(f'{start_date}부터 {end_date}까지의 사용자별 미션 현황 (닉네임 순, 메시지 합침):')
 st.write(df_mission_combined)
+
 else:
     st.write('업로드된 파일이 없습니다.')
