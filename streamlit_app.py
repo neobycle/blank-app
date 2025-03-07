@@ -59,35 +59,35 @@ if uploaded_file is not None:
     st.altair_chart(chart, use_container_width=True)
 
     # 사용자별 미션과 메시지 추출
-df_filtered['미션'] = df_filtered['Message'].str.extract(r'(#\S+)')[0]
+    df_filtered['미션'] = df_filtered['Message'].str.extract(r'(#\S+)')[0]
 
-# '#인증'을 메시지에서 제거
-df_filtered['Message'] = df_filtered['Message'].str.replace('#인증', '', regex=False)
+    # '#인증'을 메시지에서 제거
+    df_filtered['Message'] = df_filtered['Message'].str.replace('#인증', '', regex=False)
 
-# 사용자별 메시지 내용을 합치기
-df_mission = df_filtered[['User', '미션', 'Message']]
+    # 사용자별 메시지 내용을 합치기
+    df_mission = df_filtered[['User', '미션', 'Message']]
 
-# 사용자별 미션 현황과 메시지 합침
-df_mission_combined = df_mission.groupby(['User', '미션'])['Message'].apply(' '.join).reset_index()
+    # 사용자별 미션 현황과 메시지 합침
+    df_mission_combined = df_mission.groupby(['User', '미션'])['Message'].apply(' '.join).reset_index()
 
-# 사용자 닉네임 순으로 정렬
-df_mission_combined = df_mission_combined.sort_values(by=['User', '미션']).reset_index(drop=True)
+    # 사용자 닉네임 순으로 정렬
+    df_mission_combined = df_mission_combined.sort_values(by=['User', '미션']).reset_index(drop=True)
 
-# 인증 횟수 계산: 각 사용자별로 '#인증'이 포함된 메시지의 개수 계산
-df_filtered['인증 횟수'] = df_filtered['Message'].str.contains('#인증', case=False, na=False).astype(int)
+    # 인증 횟수 계산: 각 사용자별로 '#인증'이 포함된 메시지의 개수 계산
+    df_filtered['인증 횟수'] = df_filtered['Message'].str.contains('#인증', case=False, na=False).astype(int)
 
-# 사용자별 인증 횟수 합산
-df_auth_count = df_filtered.groupby('User')['인증 횟수'].sum().reset_index()
+    # 사용자별 인증 횟수 합산
+    df_auth_count = df_filtered.groupby('User')['인증 횟수'].sum().reset_index()
 
-# 사용자별 미션 현황과 인증 횟수 병합
-df_mission_combined = pd.merge(df_mission_combined, df_auth_count, on='User', how='left')
+    # 사용자별 미션 현황과 인증 횟수 병합
+    df_mission_combined = pd.merge(df_mission_combined, df_auth_count, on='User', how='left')
 
-# 테이블 순서를 1부터 시작하도록 인덱스 재설정
-df_mission_combined.index = df_mission_combined.index + 1
+    # 테이블 순서를 1부터 시작하도록 인덱스 재설정
+    df_mission_combined.index = df_mission_combined.index + 1
 
-# 사용자별 미션 현황 및 메시지 표시
-st.write(f'{start_date}부터 {end_date}까지의 사용자별 미션 현황 (닉네임 순, 메시지 합침):')
-st.write(df_mission_combined)
+    # 사용자별 미션 현황 및 메시지 표시
+    st.write(f'{start_date}부터 {end_date}까지의 사용자별 미션 현황 (닉네임 순, 메시지 합침):')
+    st.write(df_mission_combined)
 
 else:
     st.write('업로드된 파일이 없습니다.')
