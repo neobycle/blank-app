@@ -31,12 +31,12 @@ if uploaded_file is not None:
     # 선택된 기간에 해당하는 데이터만 필터링
     df_filtered = df_filtered[(df_filtered['Date'] >= start_date) & (df_filtered['Date'] <= end_date)]
 
-    #날짜별 및 사용자별로 카운팅
-    df_count = df_filtered.groupby(['User', 'Date']).size().reset_index(name='인증 횟수')
+    # 날짜별 및 사용자별로 카운팅
+    df_count = df_filtered.groupby(['User']).size().reset_index(name='인증 횟수')
 
-    # 결과 표시 (사용자별 인증 횟수, 날짜만 포함)
-    st.write(f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수 (날짜 포함):')
-    st.write(df_count[['Date', 'User', '인증 횟수']])
+    # 결과 표시 (사용자별 인증 횟수)
+    st.write(f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수:')
+    st.write(df_count)
 
     # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
     chart = alt.Chart(df_count).mark_bar().encode(
