@@ -40,19 +40,19 @@ if uploaded_file is not None:
 
     # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
     chart = alt.Chart(df_count).mark_bar().encode(
-        x=alt.X('User:N', title='User'),  # x축을 User로 설정
-        y=alt.Y('sum(인증 횟수):Q', title='인증 횟수', 
-                scale=alt.Scale(domain=[0, df_count['인증 횟수'].max()], 
-                                nice=True,  # nice는 y축 값의 범위가 자연스럽게 조정되도록 함
-                                clamp=True)),  # 값을 범위 내로 고정
-         axis=alt.Axis(tickCount=4, tickStep=1)),  # y축 눈금 간격을 설정
-        color='User:N',  # 유저별로 색깔을 다르게 설정
-        tooltip=['User:N', 'sum(인증 횟수):Q']
-    ).properties(
-        title=f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수'
-    ).configure_mark(
-        opacity=0.7
-    )
+    x=alt.X('User:N', title='User'),  # x축을 User로 설정
+    y=alt.Y('sum(인증 횟수):Q', title='인증 횟수', 
+            scale=alt.Scale(domain=[0, df_count['인증 횟수'].max()], 
+                            nice=True,  # nice는 y축 값의 범위가 자연스럽게 조정되도록 함
+                            clamp=True),  # 값을 범위 내로 고정
+            axis=alt.Axis(tickCount=4, tickStep=1)),  # y축 눈금 간격을 설정 axis=alt.Axis(tickCount=4, tickStep=1)
+    color='User:N',  # 유저별로 색깔을 다르게 설정
+    tooltip=['User:N', 'sum(인증 횟수):Q']
+).properties(
+    title=f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수'
+).configure_mark(
+    opacity=0.7
+)
 
     # Altair 차트 표시
     st.altair_chart(chart, use_container_width=True)
