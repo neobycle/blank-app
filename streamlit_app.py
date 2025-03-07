@@ -31,14 +31,20 @@ if uploaded_file is not None:
     # 날짜별 및 사용자별로 카운팅
     df_count = df_filtered.groupby(['User']).size().reset_index(name='인증 횟수')
 
+    # 테이블 순서를 1부터 시작하도록 인덱스 재설정
+    df_mission_combined.index = df_mission_combined.index + 1
+
     # 결과 표시 (사용자별 인증 횟수)
     st.write(f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수:')
     st.write(df_count)
 
-    # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
+   # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
     chart = alt.Chart(df_count).mark_bar().encode(
         x=alt.X('User:N', title='User'),  # x축을 User로 설정
-        y=alt.Y('sum(인증 횟수):Q', title='인증 횟수', scale=alt.Scale(domain=[0, df_count['인증 횟수'].max()])),  # y축 인증 횟수 단위 척도 설정
+        y=alt.Y('sum(인증 횟수):Q', title='인증 횟수', 
+                scale=alt.Scale(domain=[0, df_count['인증 횟수'].max()], 
+                                nice=True,  # nice는 y축 값의 범위가 자연스럽게 조정되도록 함
+                                clamp=True)),  # 값을 범위 내로 고정
         color='User:N',  # 유저별로 색깔을 다르게 설정
         tooltip=['User:N', 'sum(인증 횟수):Q']
     ).properties(
