@@ -39,7 +39,7 @@ if uploaded_file is not None:
     st.write(df_count)
 
     # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
-       chart = alt.Chart(df_count).mark_bar().encode(
+    chart = alt.Chart(df_count).mark_bar().encode(
     x=alt.X('User:N', title='User'),  # x축을 User로 설정
     y=alt.Y('sum(인증 횟수):Q', title='인증 횟수', 
             scale=alt.Scale(domain=[0, df_count['인증 횟수'].max()], 
@@ -49,11 +49,11 @@ if uploaded_file is not None:
             axis=alt.Axis(tickCount=5)),  # y축 눈금 개수를 설정 (예: 5개)
     color='User:N',  # 유저별로 색깔을 다르게 설정
     tooltip=['User:N', 'sum(인증 횟수):Q']
-).properties(
+    ).properties(
     title=f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수'
-).configure_mark(
+    ).configure_mark(
     opacity=0.7
-)
+    )
 
     # Altair 차트 표시
     st.altair_chart(chart, use_container_width=True)
