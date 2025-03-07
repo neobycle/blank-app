@@ -53,16 +53,16 @@ if uploaded_file is not None:
     # Altair 차트 표시
     st.altair_chart(chart, use_container_width=True)
 
-   # 사용자별 미션 추출
+    # 사용자별 미션과 메시지 추출
     df_filtered['미션'] = df_filtered['Message'].str.extract(r'(#\S+)')[0]
-    df_mission = df_filtered.groupby(['User', '미션']).size().reset_index(name='미션 횟수')
+    df_mission = df_filtered[['User', '미션', 'Message']]
 
     # 사용자 닉네임 순으로 정렬
     df_mission = df_mission.sort_values(by=['User', '미션']).reset_index(drop=True)
 
-    # 사용자별 미션 현황 표시
+    # 사용자별 미션 현황 및 메시지 표시
     st.write(f'{start_date}부터 {end_date}까지의 사용자별 미션 현황 (닉네임 순):')
     st.write(df_mission)
-
+    
 else:
     st.write('업로드된 파일이 없습니다.')
