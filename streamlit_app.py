@@ -58,9 +58,14 @@ if uploaded_file is not None:
 
     # 사용자별 미션과 메시지 추출
     df_filtered['미션'] = df_filtered['Message'].str.extract(r'(#\S+)')[0]
-    df_mission = df_filtered[['User', '미션', 'Message']]
+
+    # '#인증'을 메시지에서 제거
+    df_filtered['Message'] = df_filtered['Message'].str.replace('#인증', '', regex=False)
 
     # 사용자별 메시지 내용을 합치기
+    df_mission = df_filtered[['User', '미션', 'Message']]
+
+    # 사용자별 미션 현황과 메시지 합침
     df_mission_combined = df_mission.groupby(['User', '미션'])['Message'].apply(' '.join).reset_index()
 
     # 사용자 닉네임 순으로 정렬
