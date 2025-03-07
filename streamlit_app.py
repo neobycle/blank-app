@@ -83,7 +83,7 @@ if uploaded_file is not None:
     df_mission_combined = pd.merge(df_mission_combined, df_auth_count, on='User', how='left')
 
     # 인증 횟수 열을 미션 뒤로 이동
-    cols = ['User', '미션', 'Message', '인증 횟수']
+    cols = ['User', '미션', '인증 횟수', 'Message' ]
     df_mission_combined = df_mission_combined[cols]
 
     # 테이블 순서를 1부터 시작하도록 인덱스 재설정
