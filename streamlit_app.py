@@ -32,7 +32,11 @@ if uploaded_file is not None:
     df_filtered = df_filtered[(df_filtered['Date'] >= start_date) & (df_filtered['Date'] <= end_date)]
 
     # 날짜별 및 사용자별로 카운팅
+    #df_count = df_filtered.groupby(['User', 'Date']).size().reset_index(name='인증 횟수')# 
+
+    # 날짜별 및 사용자별로 카운팅 (1단위로 설정)
     df_count = df_filtered.groupby(['User', 'Date']).size().reset_index(name='인증 횟수')
+    df_count['인증 횟수'] = df_count['인증 횟수'].astype(int)
 
     # 결과 표시 (사용자별 인증 횟수, 날짜만 포함)
     st.write(f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수 (날짜 포함):')
