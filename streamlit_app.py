@@ -12,9 +12,6 @@ if uploaded_file is not None:
     # 업로드된 CSV 파일을 DataFrame으로 읽기
     df = pd.read_csv(uploaded_file, parse_dates=['Date'])  # 'Date' 컬럼이 날짜 형식일 경우
 
-    # 데이터프레임 표시
-    #st.write(df)
-
     # '#인증'이 포함된 메시지 필터링
     df_filtered = df[df['Message'].str.contains('#인증', case=False, na=False)]
 
@@ -41,7 +38,7 @@ if uploaded_file is not None:
     # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
     chart = alt.Chart(df_count).mark_bar().encode(
         x=alt.X('User:N', title='User'),  # x축을 User로 설정
-        y=alt.Y('sum(인증 횟수):Q', title='인증 횟수'),
+        y=alt.Y('sum(인증 횟수):Q', title='인증 횟수', scale=alt.Scale(domain=[0, df_count['인증 횟수'].max()])),  # y축 인증 횟수 단위 척도 설정
         color='User:N',  # 유저별로 색깔을 다르게 설정
         tooltip=['User:N', 'sum(인증 횟수):Q']
     ).properties(
@@ -62,6 +59,9 @@ if uploaded_file is not None:
 
     # 사용자 닉네임 순으로 정렬
     df_mission_combined = df_mission_combined.sort_values(by=['User', '미션']).reset_index(drop=True)
+
+    # 테이블 순서를 1부터 시작하도록 인덱스 재설정
+    df_mission_combined.index = df_mission_combined.index + 1
 
     # 사용자별 미션 현황 및 메시지 표시
     st.write(f'{start_date}부터 {end_date}까지의 사용자별 미션 현황 (닉네임 순, 메시지 합침):')
