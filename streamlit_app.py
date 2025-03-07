@@ -1,6 +1,57 @@
 import streamlit as st
+import pandas as pd
+import altair as alt
 
-st.title("🎈 My new app")
-st.write(
-    "Let's start building! For help and inspiration, head over to [docs.streamlit.io](https://docs.streamlit.io/)."
-)
+# 웹 페이지 제목 설정
+st.title('CSV 파일 업로드 및 #인증 메시지 분석')
+
+# 파일 업로드 위젯 생성
+uploaded_file = st.file_uploader('CSV 파일을 업로드하세요', type='csv')
+
+if uploaded_file is not None:
+    # 업로드된 CSV 파일을 DataFrame으로 읽기
+    df = pd.read_csv(uploaded_file, parse_dates=['Date'])  # 'Date' 컬럼이 날짜 형식일 경우
+
+    # 데이터프레임 표시
+    st.write(df)
+
+    # '#인증'이 포함된 메시지 필터링
+    df_filtered = df[df['Message'].str.contains('#인증', case=False, na=False)]
+
+    # 날짜만 추출하여 'Date' 컬럼을 datetime에서 date 타입으로 변경
+    df_filtered['Date'] = pd.to_datetime(df_filtered['Date']).dt.date  # 날짜만 추출
+
+    # 날짜 형식이 제대로 변환되었는지 확인
+    st.write(f"날짜 형식 확인: {df_filtered['Date'].head()}")
+
+    # 사용자로부터 시작일과 종료일 선택받기 (날짜만 사용)
+    start_date = st.date_input('시작일을 선택하세요', min(df_filtered['Date']), key='start_date')
+    end_date = st.date_input('종료일을 선택하세요', max(df_filtered['Date']), key='end_date')
+
+    # 선택된 기간에 해당하는 데이터만 필터링
+    df_filtered = df_filtered[(df_filtered['Date'] >= start_date) & (df_filtered['Date'] <= end_date)]
+
+    # 날짜별 및 사용자별로 카운팅
+    df_count = df_filtered.groupby(['User']).size().reset_index(name='인증 횟수')
+
+    # 결과 표시 (사용자별 인증 횟수)
+    st.write(f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수:')
+    st.write(df_count)
+
+    # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
+    chart = alt.Chart(df_count).mark_bar().encode(
+        x=alt.X('User:N', title='User'),  # x축을 User로 설정
+        y=alt.Y('sum(인증 횟수):Q', title='인증 횟수'),
+        color='User:N',  # 유저별로 색깔을 다르게 설정
+        tooltip=['User:N', 'sum(인증 횟수):Q']
+    ).properties(
+        title=f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수'
+    ).configure_mark(
+        opacity=0.7
+    )
+
+    # Altair 차트 표시
+    st.altair_chart(chart, use_container_width=True)
+
+else:
+    st.write('업로드된 파일이 없습니다.')
