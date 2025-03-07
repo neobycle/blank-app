@@ -46,7 +46,7 @@ if uploaded_file is not None:
                             nice=True,  # nice는 y축 값의 범위가 자연스럽게 조정되도록 함
                             clamp=True,
                             zero=True),  # y축이 0부터 시작하도록 설정
-            axis=alt.Axis(tickCount=5)),  # y축 눈금 개수를 설정 (예: 5개)
+            axis=alt.Axis(tickCount=4)),  # y축 눈금 개수를 설정 (예: 4개)
     color='User:N',  # 유저별로 색깔을 다르게 설정
     tooltip=['User:N', 'sum(인증 횟수):Q']
     ).properties(
