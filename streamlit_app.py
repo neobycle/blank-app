@@ -57,12 +57,15 @@ if uploaded_file is not None:
     df_filtered['미션'] = df_filtered['Message'].str.extract(r'(#\S+)')[0]
     df_mission = df_filtered[['User', '미션', 'Message']]
 
+    # 사용자별 메시지 내용을 합치기
+    df_mission_combined = df_mission.groupby(['User', '미션'])['Message'].apply(' '.join).reset_index()
+
     # 사용자 닉네임 순으로 정렬
-    df_mission = df_mission.sort_values(by=['User', '미션']).reset_index(drop=True)
+    df_mission_combined = df_mission_combined.sort_values(by=['User', '미션']).reset_index(drop=True)
 
     # 사용자별 미션 현황 및 메시지 표시
-    st.write(f'{start_date}부터 {end_date}까지의 사용자별 미션 현황 (닉네임 순):')
-    st.write(df_mission)
+    st.write(f'{start_date}부터 {end_date}까지의 사용자별 미션 현황 (닉네임 순, 메시지 합침):')
+    st.write(df_mission_combined)
     
 else:
     st.write('업로드된 파일이 없습니다.')
