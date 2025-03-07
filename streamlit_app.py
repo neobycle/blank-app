@@ -61,6 +61,9 @@ if uploaded_file is not None:
     # 사용자별 미션과 메시지 추출
     df_filtered['미션'] = df_filtered['Message'].str.extract(r'(#\S+)')[0]
 
+    # 인증 횟수 계산: '#인증'이 포함된 메시지의 개수 계산
+    df_filtered['인증 횟수'] = df_filtered['Message'].str.contains('#인증', case=False, na=False).astype(int)
+
     # '#인증'을 메시지에서 제거
     df_filtered['Message'] = df_filtered['Message'].str.replace('#인증', '', regex=False)
 
@@ -72,9 +75,6 @@ if uploaded_file is not None:
 
     # 사용자 닉네임 순으로 정렬
     df_mission_combined = df_mission_combined.sort_values(by=['User', '미션']).reset_index(drop=True)
-
-    # 인증 횟수 계산: 각 사용자별로 '#인증'이 포함된 메시지의 개수 계산
-    df_filtered['인증 횟수'] = df_filtered['Message'].str.contains('#인증', case=False, na=False).astype(int)
 
     # 사용자별 인증 횟수 합산
     df_auth_count = df_filtered.groupby('User')['인증 횟수'].sum().reset_index()
