@@ -13,7 +13,7 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, parse_dates=['Date'])  # 'Date' 컬럼이 날짜 형식일 경우
 
     # 데이터프레임 표시
-    st.write(df)
+    #st.write(df)
 
     # '#인증'이 포함된 메시지 필터링
     df_filtered = df[df['Message'].str.contains('#인증', case=False, na=False)]
@@ -36,7 +36,7 @@ if uploaded_file is not None:
 
     # 결과 표시 (사용자별 인증 횟수, 날짜만 포함)
     st.write(f'{start_date}부터 {end_date}까지의 사용자별 인증 횟수 (날짜 포함):')
-    st.write(df_count[['User', 'Date', '인증 횟수']])
+    st.write(df_count[['Date', 'User', '인증 횟수']])
 
     # Altair를 사용하여 유저별 인증 횟수 높은 순으로 그래프 생성
     chart = alt.Chart(df_count).mark_bar().encode(
