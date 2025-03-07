@@ -45,6 +45,7 @@ if uploaded_file is not None:
                 scale=alt.Scale(domain=[0, df_count['인증 횟수'].max()], 
                                 nice=True,  # nice는 y축 값의 범위가 자연스럽게 조정되도록 함
                                 clamp=True)),  # 값을 범위 내로 고정
+         axis=alt.Axis(tickCount=4, tickStep=1)),  # y축 눈금 간격을 설정
         color='User:N',  # 유저별로 색깔을 다르게 설정
         tooltip=['User:N', 'sum(인증 횟수):Q']
     ).properties(
