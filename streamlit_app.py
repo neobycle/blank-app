@@ -7,18 +7,20 @@ st.title("📊 사람별 회의 참석 및 리더 현황 (4회 연속 순환 리
 uploaded_file = st.file_uploader("엑셀 또는 CSV 업로드", type=["xlsx", "csv"])
 
 if uploaded_file is not None:
-    # 파일 불러오기
+    # 파일 읽기
     if uploaded_file.name.endswith(".xlsx"):
         df = pd.read_excel(uploaded_file)
     else:
         df = pd.read_csv(uploaded_file)
 
-    # 주차 컬럼 (리더 제외)
+    # 회차 컬럼
     week_cols = [col for col in df.columns if "회차" in col and "_리더" not in col]
 
-    # 리더 순환 배정: 한 사람당 4회
+    # 사람 리스트
     people = df["이름"].tolist()
     num_people = len(people)
+
+    # 4회씩 순환 리더 배정
     for i, week in enumerate(week_cols):
         person_idx = (i // 4) % num_people
         df[f"{week}_리더"] = df["이름"].apply(lambda x: "리더" if x == people[person_idx] else "")
@@ -49,7 +51,7 @@ if uploaded_file is not None:
     result["리더 횟수"] = result.apply(calc_leader_count, axis=1)
     result["남은 리더 횟수"] = MAX_LEADER - result["리더 횟수"]
 
-    # 테이블 표시 (1부터 시작)
+    # 테이블 표시
     display_df = result[["이름", "참석 횟수", "불참 횟수", "출석률(%)",
                          "불참 주차", "리더 횟수", "남은 리더 횟수"]]
     display_df.index = display_df.index + 1
