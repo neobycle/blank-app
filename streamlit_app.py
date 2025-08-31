@@ -22,7 +22,7 @@ if uploaded_file is not None:
 
     # 4회씩 순환 리더 배정 (NaN/공백 안전 처리)
     for i, week in enumerate(week_cols):
-        person_idx = (i // 4) % num_people
+        person_idx = (i // 2) % num_people
         leader_name = people[person_idx]
         df[f"{week}_리더"] = df["이름"].apply(lambda x: "리더" if str(x).strip() == leader_name else "")
 
@@ -45,7 +45,7 @@ if uploaded_file is not None:
         return sum(1 for col in leader_cols if str(row[col]).strip() == "리더")
 
     result["리더 횟수"] = result.apply(calc_leader_count, axis=1)
-    MAX_LEADER = 4
+    MAX_LEADER = 2
     result["남은 리더 횟수"] = MAX_LEADER - result["리더 횟수"]
 
     # 테이블 표시 (1부터 시작)
