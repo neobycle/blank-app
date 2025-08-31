@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-st.title("📊 사람별 회의 참석 현황 분석")
+st.title("📊 사람별 회의 참석 현황 분석 (열 기반 주차)")
 
-# 파일 업로드
-uploaded_file = st.file_uploader("회의 참석자 파일 업로드 (xlsx 또는 csv)", type=["xlsx", "csv"])
+uploaded_file = st.file_uploader("엑셀 또는 CSV 파일 업로드", type=["xlsx", "csv"])
 
 if uploaded_file is not None:
     # 파일 불러오기
@@ -17,7 +16,7 @@ if uploaded_file is not None:
     st.dataframe(df, use_container_width=True)
 
     # 주차 컬럼 찾기
-    week_cols = [col for col in df.columns if "주차" in col]
+    week_cols = [col for col in df.columns if "회차" in col]
 
     # 사람별 참석/불참 계산 함수
     def calc_attendance(row):
@@ -37,7 +36,7 @@ if uploaded_file is not None:
     # 요약 테이블 표시
     st.subheader("👤 사람별 참석 현황 요약")
     st.dataframe(
-        result[["이름", "부서", "이메일", "참석 횟수", "불참 횟수", "출석률(%)", "불참 주차"]],
+        result[["이름", "참석 횟수", "불참 횟수", "출석률(%)", "불참 주차"]],
         use_container_width=True
     )
 
