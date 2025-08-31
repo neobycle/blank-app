@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-st.title("📊 사람별 회의 참석 및 리더 현황 (리더 정보 포함)")
+st.title("📊 사람별 회의 참석 및 리더 현황 (4회 연속 순환 리더)")
 
 uploaded_file = st.file_uploader("엑셀 또는 CSV 업로드", type=["xlsx", "csv"])
 
@@ -13,8 +13,16 @@ if uploaded_file is not None:
     else:
         df = pd.read_csv(uploaded_file)
 
-    # 주차 컬럼 찾기
+    # 주차 컬럼 (리더 제외)
     week_cols = [col for col in df.columns if "회차" in col and "_리더" not in col]
+
+    # 리더 순환 배정: 한 사람당 4회
+    people = df["이름"].tolist()
+    num_people = len(people)
+    for i, week in enumerate(week_cols):
+        person_idx = (i // 4) % num_people
+        df[f"{week}_리더"] = df["이름"].apply(lambda x: "리더" if x == people[person_idx] else "")
+
     leader_cols = [col for col in df.columns if "_리더" in col]
 
     # 참석/불참 계산
@@ -31,14 +39,21 @@ if uploaded_file is not None:
 
     # 리더 횟수 계산
     MAX_LEADER = 4
-    result["리더 횟수"] = (df[leader_cols] == "리더").sum(axis=1)
+    def calc_leader_count(row):
+        count = 0
+        for col in leader_cols:
+            if str(row[col]).strip() == "리더":
+                count += 1
+        return count
+
+    result["리더 횟수"] = result.apply(calc_leader_count, axis=1)
     result["남은 리더 횟수"] = MAX_LEADER - result["리더 횟수"]
 
-    # 1부터 시작하는 인덱스
-    display_df = result[["이름", "참석 횟수", "불참 횟수", "출석률(%)", "불참 주차", "리더 횟수", "남은 리더 횟수"]]
+    # 테이블 표시 (1부터 시작)
+    display_df = result[["이름", "참석 횟수", "불참 횟수", "출석률(%)",
+                         "불참 주차", "리더 횟수", "남은 리더 횟수"]]
     display_df.index = display_df.index + 1
     display_df.index.name = "번호"
-
     st.subheader("👤 사람별 참석 및 리더 현황")
     st.dataframe(display_df, use_container_width=True)
 
