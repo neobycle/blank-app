@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-st.title("📊 사람별 회의 참석 및 리더 현황 (4회 연속 순환 리더)")
+st.title("📊 스터디 참석 및 리더 현황 ")
 
 uploaded_file = st.file_uploader("엑셀 또는 CSV 업로드", type=["xlsx", "csv"])
 
