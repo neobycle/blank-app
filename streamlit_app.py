@@ -20,10 +20,11 @@ if uploaded_file is not None:
     people = df["이름"].tolist()
     num_people = len(people)
 
-    # 4회씩 순환 리더 배정
+    # 4회씩 순환 리더 배정 (NaN/공백 안전 처리)
     for i, week in enumerate(week_cols):
         person_idx = (i // 4) % num_people
-        df[f"{week}_리더"] = df["이름"].apply(lambda x: "리더" if x == people[person_idx] else "")
+        leader_name = people[person_idx]
+        df[f"{week}_리더"] = df["이름"].apply(lambda x: "리더" if str(x).strip() == leader_name else "")
 
     leader_cols = [col for col in df.columns if "_리더" in col]
 
@@ -39,19 +40,15 @@ if uploaded_file is not None:
     result = df.copy()
     result[["참석 횟수","불참 횟수","출석률(%)","불참 주차"]] = result.apply(calc_attendance, axis=1)
 
-    # 리더 횟수 계산
-    MAX_LEADER = 4
+    # 리더 횟수 계산 (NaN/공백 안전 처리)
     def calc_leader_count(row):
-        count = 0
-        for col in leader_cols:
-            if str(row[col]).strip() == "리더":
-                count += 1
-        return count
+        return sum(1 for col in leader_cols if str(row[col]).strip() == "리더")
 
     result["리더 횟수"] = result.apply(calc_leader_count, axis=1)
+    MAX_LEADER = 4
     result["남은 리더 횟수"] = MAX_LEADER - result["리더 횟수"]
 
-    # 테이블 표시
+    # 테이블 표시 (1부터 시작)
     display_df = result[["이름", "참석 횟수", "불참 횟수", "출석률(%)",
                          "불참 주차", "리더 횟수", "남은 리더 횟수"]]
     display_df.index = display_df.index + 1
