@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-import numpy as np
 
-st.title("📊 사람별 회의 참석 및 리더 현황")
+st.title("📊 사람별 회의 참석 및 리더 현황 (리더 정보 포함)")
 
 uploaded_file = st.file_uploader("엑셀 또는 CSV 업로드", type=["xlsx", "csv"])
 
@@ -15,9 +14,10 @@ if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
 
     # 주차 컬럼 찾기
-    week_cols = [col for col in df.columns if "회차" in col]
+    week_cols = [col for col in df.columns if "회차" in col and "_리더" not in col]
+    leader_cols = [col for col in df.columns if "_리더" in col]
 
-    # 참석/불참 계산 함수
+    # 참석/불참 계산
     def calc_attendance(row):
         attended = (row[week_cols] == "참석").sum()
         absent = (row[week_cols] == "불참").sum()
@@ -29,20 +29,17 @@ if uploaded_file is not None:
     result = df.copy()
     result[["참석 횟수","불참 횟수","출석률(%)","불참 주차"]] = result.apply(calc_attendance, axis=1)
 
-    # 리더 현황 (예: 최대 4회)
+    # 리더 횟수 계산
     MAX_LEADER = 4
-    np.random.seed(42)
-    result["리더 횟수"] = np.random.randint(0, MAX_LEADER+1, size=len(result))
+    result["리더 횟수"] = (df[leader_cols] == "리더").sum(axis=1)
     result["남은 리더 횟수"] = MAX_LEADER - result["리더 횟수"]
 
-    # 숫자형 보장
-    result["출석률(%)"] = pd.to_numeric(result["출석률(%)"], errors='coerce')
-
-    # 테이블: 1부터 시작하는 인덱스
-    st.subheader("👤 사람별 참석 및 리더 현황")
+    # 1부터 시작하는 인덱스
     display_df = result[["이름", "참석 횟수", "불참 횟수", "출석률(%)", "불참 주차", "리더 횟수", "남은 리더 횟수"]]
     display_df.index = display_df.index + 1
     display_df.index.name = "번호"
+
+    st.subheader("👤 사람별 참석 및 리더 현황")
     st.dataframe(display_df, use_container_width=True)
 
     # 개인별 출석률 그래프
