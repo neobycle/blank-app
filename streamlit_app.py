@@ -38,7 +38,7 @@ if uploaded_file is not None:
         return pd.Series([attended, absent, attendance_rate, absent_weeks])
 
     result = df.copy()
-    result[["참석 횟수","불참 횟수","출석률(%)","불참 주차"]] = result.apply(calc_attendance, axis=1)
+    result[["참석 횟수","불참 횟수","출석률(%)","불참 회차"]] = result.apply(calc_attendance, axis=1)
 
     # 리더 횟수 계산 (NaN/공백 안전 처리)
     def calc_leader_count(row):
